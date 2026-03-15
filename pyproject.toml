@@ -20,7 +20,7 @@ lint = [
     "mypy (>=1.19.1,<2.0.0)",
 ]
 
-
+# === 🔧 RUFF: Основные настройки ===
 [tool.ruff]
 # Указываем версию Python, под которую пишем код (для правильных проверок синтаксиса)
 target-version = "py312" # указать актуальную версию python для проекта
@@ -55,7 +55,7 @@ exclude = [
     "migrations",  # Часто миграции Django/SQLAlchemy не линтят
 ]
 
-# Настройки линтера (проверка кода)
+# === 📋 RUFF: Правила линтинга ===
 [tool.ruff.lint]
 # Выбираем наборы правил:
 # E - pycodestyle errors
@@ -80,11 +80,11 @@ ignore = [
 fixable = ["ALL"]
 unfixable = []
 
-# Настройки сортировки импортов (аналог isort)
+# === 📦 RUFF: Сортировка импортов ===
 [tool.ruff.lint.isort]
-known-first-party = ["transaction-feed"]  # Замените на имя вашего пакета
+known-first-party = ["transaction-feed"]  # Имя проекта
 
-# Настройки форматера (аналог black)
+# === 🎨 RUFF: Форматирование кода ===
 [tool.ruff.format]
 # Использовать двойные кавычки для строк
 quote-style = "double"
@@ -95,9 +95,15 @@ skip-magic-trailing-comma = false
 # Кодировка
 line-ending = "auto"
 
-
+# === 🔍 MYPY: Статическая проверка типов ===
 [tool.mypy]
-disallow_untyped_defs = true
+disallow_untyped_defs = true # Требует аннотации типов для всех функций.
+
+# Запрещает неявный None. Нужно писать Optional[int] или int | None, а не просто x: int = None.
 no_implicit_optional = true
+
+# Предупреждает, если функция возвращает Any. Помогает найти места, где теряется информация о типах.
 warn_return_any = true
+
+# Исключает папки из проверки. mypy не будет сканировать виртуальное окружение и кэш Python.
 exclude = ["venv", "__pycache__"] 
