@@ -20,7 +20,7 @@ def mask_account_card(payment_info: str) -> str:
     return get_mask_card_number(number)
 
 
-def get_date(date: str):
+def get_date(date: str) -> str:
     """
     Преобразует дату из формата ISO в формат DD.MM.YYYY.
 
