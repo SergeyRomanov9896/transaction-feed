@@ -28,17 +28,31 @@
 
 ```bash
 git clone https://github.com/SergeyRomanov9896/transaction-feed.git
+
 cd transaction-feed
 ```
 
-2. (Опционально) создайте виртуальное окружение и активируйте его:
+2. Установите зависимости и активируйте окружение через Poetry:
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
+   ### Установка зависимостей (создаст окружение автоматически)
 
-## 4. Примеры использования
+   ```bash
+   poetry install
+   ```
+
+   ### Активация виртуального окружения
+
+   ```bash
+   poetry shell
+   ```
+
+   ### ИЛИ запуск проекта без активации оболочки
+
+   ```bash
+   poetry run python main.py
+   ```
+
+## 3. Примеры использования
 
 ### Фильтрация и сортировка операций
 
