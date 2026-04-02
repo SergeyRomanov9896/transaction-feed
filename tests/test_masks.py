@@ -26,4 +26,3 @@ def test_card_with_none():
 def test_account_with_none():
     with pytest.raises(TypeError):
         get_mask_account(None)
-
