@@ -9,6 +9,9 @@ def get_mask_card_number(card_number: str) -> str:
     Returns:
         str: Замаскированный номер карты, отформатированный с пробелами в группах по 4 цифры.
     """
+    if len(card_number) != 16:
+        raise ValueError("Нестандартное количество цифр")
+
     number_disguise = card_number[6:12]
     disguise = card_number.replace(number_disguise, "******")
     separation = disguise[0:4] + " " + disguise[4:8] + " " + disguise[8:12] + " " + disguise[-4:]
@@ -24,6 +27,9 @@ def get_mask_account(account: str) -> str:
     Returns:
         str: Замаскированный номер счета, где все символы, кроме последних четырех заменены на звездочки.
     """
+    if len(account) != 20:
+        raise ValueError("Нестандартное количество цифр")
+
     number_disguise = account[14:16]
     disguise = account.replace(number_disguise, "**")
     return disguise[-6:]

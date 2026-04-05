@@ -41,7 +41,7 @@ def test_filtering_by_specified_status(sample_data, state, expected):
     assert filter_by_state(sample_data, state) == expected
 
 
-@pytest.mark.parametrize("invalid_state", [(None, "NONEXISTENT", 1234, True, {})])
+@pytest.mark.parametrize("invalid_state", [None, "NONEXISTENT", 1234, True, {}])
 def test_filter_by_state_invalid_or_missing(sample_data, invalid_state):
     assert filter_by_state(sample_data, invalid_state) == []
 
