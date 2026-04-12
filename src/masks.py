@@ -12,10 +12,7 @@ def get_mask_card_number(card_number: str) -> str:
     if len(card_number) != 16:
         raise ValueError("Нестандартное количество цифр")
 
-    number_disguise = card_number[6:12]
-    disguise = card_number.replace(number_disguise, "******")
-    separation = disguise[0:4] + " " + disguise[4:8] + " " + disguise[8:12] + " " + disguise[-4:]
-    return separation
+    return f"{card_number[0:4]} {card_number[4:6]}** **** {card_number[-4:]}"
 
 
 def get_mask_account(account: str) -> str:
@@ -30,6 +27,4 @@ def get_mask_account(account: str) -> str:
     if len(account) != 20:
         raise ValueError("Нестандартное количество цифр")
 
-    number_disguise = account[14:16]
-    disguise = account.replace(number_disguise, "**")
-    return disguise[-6:]
+    return f"****{account[-4:]}"
