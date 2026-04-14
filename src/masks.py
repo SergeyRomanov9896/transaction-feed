@@ -27,4 +27,4 @@ def get_mask_account(account: str) -> str:
     if len(account) != 20:
         raise ValueError("Нестандартное количество цифр")
 
-    return f"****{account[-4:]}"
+    return f"**{account[-4:]}"

@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 
-def filter_by_currency(data: list[dict], currency="USD") -> Iterator[dict]:
+def filter_by_currency(data: list[dict], currency: str="USD") -> Iterator[dict]:
     """
     Фильтрует список словарей транзакций по указанной валюте.
 
