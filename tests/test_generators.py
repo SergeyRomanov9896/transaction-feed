@@ -93,6 +93,22 @@ def test_filters_the_list_by_the_specified_currency(sample_transactions):
     assert result == expected
 
 
+@pytest.mark.parametrize("invalid_name", [123, None, True])
+def test_filter_checking_for_wrong_type(sample_transactions, invalid_name):
+    with pytest.raises(TypeError):
+        result_gen = filter_by_currency(sample_transactions, invalid_name)
+        result = list(result_gen)
+        assert result
+
+
+@pytest.mark.parametrize("invalid_name", ["USD!", "123", ""])
+def test_filter_checking_for_an_incorrect_value(sample_transactions, invalid_name):
+    with pytest.raises(ValueError):
+        result_gen = filter_by_currency(sample_transactions, invalid_name)
+        result = list(result_gen)
+        assert result
+
+
 # ================= TRANSACTION DESCRIPTIONS =================
 
 
@@ -110,6 +126,33 @@ def test_returns_descriptions_from_list_of_transaction_dictionaries(sample_trans
     assert result == expected
 
 
+def test_missing_keys_description():
+    edit_data = [
+        {
+            "id": 939719570,
+            "state": "EXECUTED",
+            "date": "2018-06-30T02:08:58.425572",
+            "operationAmount": {"amount": "9824.07", "currency": {"name": "USD", "code": "USD"}},
+            "false_value": "Перевод организации",
+            "from": "Счет 75106830613657916952",
+            "to": "Счет 11776614605963066702",
+        },
+        {
+            "id": 142264268,
+            "state": "EXECUTED",
+            "date": "2019-04-04T23:20:05.206878",
+            "operationAmount": {"amount": "79114.93", "currency": {"name": "USD", "code": "USD"}},
+            "false_value": "Перевод со счета на счет",
+            "from": "Счет 19708645243227258542",
+            "to": "Счет 75651667383060284188",
+        },
+    ]
+    with pytest.raises(KeyError):
+        result_gen = transaction_descriptions(edit_data)
+        result = list(result_gen)
+        assert result
+
+
 # ================= CARD NUMBER GENERATOR =================
 
 
@@ -124,3 +167,21 @@ def test_generates_card_numbers_from_range_of_integers():
         "0000 0000 0000 0005",
     ]
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "start_invalid, stop_invalid",
+    [
+        ("1", "5"),
+        ("2", 4),
+        (3, "6"),
+        (1, None),
+        (None, 1),
+        (None, None),
+    ],
+)
+def test_generator_checking_for_wrong_type(start_invalid, stop_invalid):
+    with pytest.raises(TypeError):
+        result_gen = card_number_generator(start_invalid, stop_invalid)
+        result = list(result_gen)
+        assert result

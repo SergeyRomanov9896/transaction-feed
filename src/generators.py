@@ -12,7 +12,15 @@ def filter_by_currency(data: list[dict], currency="USD") -> Iterator[dict]:
     Yields:
         dict: Словари транзакций, где валюта соответствует указанной валюте.
     """
-    yield from [i for i in data if i["operationAmount"]["currency"]["name"] == currency]
+    if not isinstance(currency, str):
+        raise TypeError("currency должно быть str")
+
+    if not currency.isalpha():
+        raise ValueError("currency должна содержать только буквы")
+
+    for tx in data:
+        if tx.get("operationAmount", {}).get("currency", {}).get("name", "") == currency:
+            yield tx
 
 
 def transaction_descriptions(data: list[dict]) -> Iterator[str]:
@@ -25,7 +33,13 @@ def transaction_descriptions(data: list[dict]) -> Iterator[str]:
     Yields:
         str: Строки описаний из транзакций.
     """
-    yield from [i["description"] for i in data if i["description"]]
+
+    if not any("description" in tx for tx in data):
+        raise KeyError("Ни в одной транзакции не найден ключ 'description'")
+
+    for tx in data:
+        if tx.get("description"):
+            yield tx["description"]
 
 
 def card_number_generator(start: int, stop: int) -> Iterator[str]:
@@ -39,6 +53,7 @@ def card_number_generator(start: int, stop: int) -> Iterator[str]:
     Yields:
         str: Отформатированные номера карт в формате "XXXX XXXX XXXX XXXX".
     """
+
     for i in range(start, stop + 1):
         full_number = str(i).zfill(16)
         yield f"{full_number[0:4]} {full_number[4:8]} {full_number[8:12]} {full_number[12:]}"
