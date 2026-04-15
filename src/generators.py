@@ -9,6 +9,10 @@ def filter_by_currency(data: list[dict], currency: str="USD") -> Iterator[dict]:
         data (list[dict]): Список словарей транзакций, каждый содержащий ключ 'operationAmount' с информацией о валюте.
         currency (str): Название валюты для фильтрации (например, "USD", "RUB"). По умолчанию "USD".
 
+    Raises:
+        TypeError: Если currency не строка.
+        ValueError: Если currency содержит символы, отличные от букв.
+
     Yields:
         dict: Словари транзакций, где валюта соответствует указанной валюте.
     """
@@ -29,6 +33,9 @@ def transaction_descriptions(data: list[dict]) -> Iterator[str]:
 
     Args:
         data (list[dict]): Список словарей транзакций, каждый потенциально содержащий ключ 'description'.
+
+    Raises:
+        KeyError: Если ни в одной транзакции не найден ключ 'description'.
 
     Yields:
         str: Строки описаний из транзакций.
