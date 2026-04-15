@@ -6,6 +6,9 @@ def get_mask_card_number(card_number: str) -> str:
     Args:
         card_number (str): 16-значный номер кредитной карты.
 
+    Raises:
+        ValueError: Если длина номера карты не равна 16 символам.
+
     Returns:
         str: Замаскированный номер карты, отформатированный с пробелами в группах по 4 цифры.
     """
@@ -21,10 +24,14 @@ def get_mask_account(account: str) -> str:
 
     Args:
         account (str): Номер банковского счета в виде строки.
+
+    Raises:
+        ValueError: Если длина номера счета не равна 20 символам.
+
     Returns:
         str: Замаскированный номер счета, где все символы, кроме последних четырех заменены на звездочки.
     """
     if len(account) != 20:
         raise ValueError("Нестандартное количество цифр")
 
-    return f"****{account[-4:]}"
+    return f"**{account[-4:]}"
