@@ -7,12 +7,13 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
-def log(filename: str | None = None) -> Callable[[Callable[P, R]], Callable[P, R]]:
+def log(filename: str | None = None, log_dir: str | None = None) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Декоратор логирования выполнения функции.
 
     Args:
         filename (str | None): Имя файла для записи логов. Если None, вывод ведется в консоль.
+        log_dir (str | None): Каталог для записи файла логов. Если None, используется директория `data` рядом с пакетом.
 
     Raises:
         TypeError: Если filename не None и не является строкой.
@@ -28,7 +29,7 @@ def log(filename: str | None = None) -> Callable[[Callable[P, R]], Callable[P, R
         def wrapper(*args, **kwargs):
 
             if filename:
-                base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                base_dir = log_dir or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 log_file_path = os.path.join(base_dir, "data", filename)
                 os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
             else:
