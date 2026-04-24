@@ -24,9 +24,9 @@ def log(filename: str | None = None, log_dir: str | None = None) -> Callable[[Ca
     if filename is not None and not isinstance(filename, str):
         raise TypeError("Ожидаемый тип данных должен быть строкой.")
 
-    def decorator(func):
+    def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
 
             if filename:
                 base_dir = log_dir or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
