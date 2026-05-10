@@ -2,6 +2,14 @@ import json
 
 
 def get_transactions(path: str = "data/operations.json"):
+    """Загружает транзакции из JSON-файла.
+
+    Аргументы:
+        path (str): Путь к JSON-файлу. По умолчанию "data/operations.json".
+
+    Возвращает:
+        list: Список транзакций или пустой список в случае ошибки.
+    """
     try:
         with open(path, encoding="utf-8") as f:
             data_json = json.load(f)
@@ -15,7 +23,17 @@ def get_transactions(path: str = "data/operations.json"):
 
 
 def data_filtering(data):
+    """Фильтрует транзакции по статусу EXECUTED и извлекает валюту и сумму.
 
+    Аргументы:
+        data (list): Список транзакций.
+
+    Возвращает:
+        list: Список словарей с ключами 'currency' и 'amount'.
+
+    Вызывает:
+        ValueError: Если нет транзакций со статусом EXECUTED.
+    """
     if not any(ex.get("state") == "EXECUTED" for ex in data):
         raise ValueError("Ошибка валидации: в данных отсутствуют транзакции со статусом EXECUTED")
 

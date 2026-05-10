@@ -12,10 +12,17 @@ SUPPORTED_CURRENCIES = {"USD", "EUR"}
 
 
 def _convert_via_api(currency: str, amount: float) -> float:
-    """
-    Делает запрос к внешнему API /convert.
-    Возвращает сконвертированную сумму в рублях.
-    Выбрасывает ValueError при ошибках.
+    """Конвертирует сумму из указанной валюты в рубли через внешний API.
+
+    Аргументы:
+        currency (str): Код валюты (например, "USD").
+        amount (float): Сумма для конвертации.
+
+    Возвращает:
+        float: Сумма в рублях.
+
+    Вызывает:
+        ValueError: Если API_KEY не найден или при ошибках API/сети.
     """
     if not API_KEY:
         raise ValueError("API_KEY не найден. Создайте файл .env в корне проекта и добавьте строку: API_KEY=ваш_ключ")
@@ -41,10 +48,16 @@ def _convert_via_api(currency: str, amount: float) -> float:
 
 
 def convert_transaction_to_rubles(transaction: dict) -> float:
-    """
-    Основная функция по заданию.
-    Принимает: {"currency": "USD", "amount": "8221.37"}
-    Возвращает: float — сумма в рублях
+    """Конвертирует транзакцию в рубли.
+
+    Аргументы:
+        transaction (dict): Словарь с ключами 'currency' и 'amount'.
+
+    Возвращает:
+        float: Сумма в рублях, округленная до 2 знаков.
+
+    Вызывает:
+        ValueError: При некорректных данных или неподдерживаемой валюте.
     """
     currency = transaction.get("currency", "").upper()
 
