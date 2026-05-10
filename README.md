@@ -1,23 +1,34 @@
 # transaction-feed
 
-Проект `transaction-feed` предоставляет набор утилит для обработки банковских транзакций: фильтрация по состоянию, сортировка по дате, маскирование номеров карт и счетов, генерация номеров карт и форматирование даты.
+Проект `transaction-feed` предоставляет набор утилит для обработки банковских транзакций: загрузка и фильтрация операций, сортировка по дате, маскирование номеров карт и счетов, генерация номеров карт, конвертация валют и простое логирование.
 
 ## 1. Описание проекта
 
-Этот проект содержит простой набор функций, которые демонстрируют базовую работу с транзакциями:
+Этот проект содержит набор модулей для работы с банковскими операциями:
 
-- `filter_by_state` — фильтрует список операций по полю `state` (например, оставляет только `EXECUTED`).
-- `sort_by_date` — сортирует список операций по полю `date` (по умолчанию от новых к старым).
-- `filter_by_currency` — фильтрует список операций по валюте платежа.
-- `transaction_descriptions` — извлекает текстовые описания из записей транзакций.
-- `card_number_generator` — генерирует форматированные номера карт в диапазоне чисел.
-- `get_mask_card_number` — маскирует 16-значный номер карты, заменяя средние 6 цифр на `*` и группируя пробелами по 4. Включает валидацию входных данных (проверка на 16 цифр).
-- `get_mask_account` — маскирует банковский счет, оставляя видимыми только последние 4 знака. Включает валидацию входных данных (проверка на 20 цифр).
-- `mask_account_card` — выбирает нужный метод маскировки в зависимости от формата строки платежа (например, `Счет ...` или `Visa ...`).
-- `log` — декоратор логирования выполнения функций. Записывает результат или ошибку в файл или выводит в консоль.
-- `get_date` — превращает дату ISO `YYYY-MM-DDTHH:MM:SS` в `DD.MM.YYYY`.
+- `src/processing.py`
+  - `filter_by_state` — фильтрует список операций по полю `state` (например, оставляет только `EXECUTED`).
+  - `sort_by_date` — сортирует список операций по полю `date` (по умолчанию от новых к старым).
+- `src/generators.py`
+  - `card_number_generator` — генерирует форматированные номера карт в диапазоне чисел.
+  - `filter_by_currency` — фильтрует операции по валюте платежа.
+  - `transaction_descriptions` — извлекает описание из записей транзакций.
+- `src/masks.py`
+  - `get_mask_card_number` — маскирует 16-значный номер карты, заменяя средние 6 цифр на `*`.
+  - `get_mask_account` — маскирует банковский счет, оставляя видимыми только последние 4 цифры.
+- `src/widget.py`
+  - `mask_account_card` — выбирает нужный метод маскировки по формату строки платежа (`Счет ...` или любой другой номер карты).
+  - `get_date` — преобразует дату ISO `YYYY-MM-DDTHH:MM:SS` в формат `DD.MM.YYYY`.
+- `src/utils.py`
+  - `get_transactions` — загружает транзакции из JSON-файла и обрабатывает ошибки парсинга/отсутствия файла.
+  - `data_filtering` — фильтрует транзакции со статусом `EXECUTED` и возвращает список с `currency` и `amount`.
+- `src/external_api.py`
+  - `convert_transaction_to_rubles` — конвертирует валютную транзакцию в рубли, обрабатывая `RUB`, `USD` и `EUR`.
 
-Проект включает полный набор тестов pytest, включая `tests/test_decorators.py` для нового модуля логирования, что обеспечивает надежность и корректность работы функций.
+Проект включает тесты для новых модулей:
+- `tests/test_utils.py`
+- `tests/test_external_api.py`
+- и другие существующие тесты для `src/decorators.py`, `src/masks.py`, `src/processing.py`, `src/generators.py`, `src/widget.py`.
 
 ## 2. Технологии и стек
 
@@ -28,8 +39,13 @@
   - `src/generators.py`
   - `src/widget.py`
   - `src/decorators.py`
+  - `src/utils.py`
+  - `src/external_api.py`
 - Тестирование: pytest
-- Нет внешних зависимостей (стандартная библиотека), дополнительные инструменты для разработки (linting, type checking) и тестирования.
+- Зависимости:
+  - `python-dotenv` — для загрузки переменных окружения из `.env`
+  - `requests` — для работы `src/external_api.py` с внешним API конвертации валют
+- Инструменты разработки: linting, type checking и тестирование через Poetry.
 
 ## 3. Инструкция по установке
 
@@ -37,33 +53,39 @@
 
 ```bash
 git clone https://github.com/SergeyRomanov9896/transaction-feed.git
-
 cd transaction-feed
 ```
 
 2. Установите зависимости и активируйте окружение через Poetry:
 
-   ### Установка зависимостей (создаст окружение автоматически)
+```bash
+poetry install
+```
 
-   ```bash
-   poetry install
-   ```
+3. Активируйте виртуальное окружение:
 
-   ### Активация виртуального окружения
+```bash
+poetry shell
+```
 
-   ```bash
-   poetry shell
-   ```
+4. ИЛИ запустите проект без активации оболочки:
 
-   ### ИЛИ запуск проекта без активации оболочки
+```bash
+poetry run python main.py
+```
 
-   ```bash
-   poetry run python main.py
-   ```
 
-> В проекте нет новых внешних зависимостей: используется стандартная библиотека Python, а для тестирования применяется `pytest`.
+dДля работы модуля `src/external_api.py` необходимо создать файл `.env` в корне проекта со значением:
 
-> Добавленный модуль `src/decorators.py` работает без дополнительных зависимостей.
+```env
+API_KEY=ваш_ключ
+```
+
+Если `requests` не установлен автоматически, добавьте его командой:
+
+```bash
+poetry add requests
+```
 
 ## 4. Запуск тестов
 
@@ -81,20 +103,26 @@ poetry run pytest --cov=src
 
 ## 5. Примеры использования
 
-### Фильтрация и сортировка операций
+### Загрузка и фильтрация транзакций
 
 ```python
-from src.processing import filter_by_state, sort_by_date
+from src.utils import get_transactions, data_filtering
+from src.processing import sort_by_date
 
-transactions = [
-    {'id': 1, 'state': 'EXECUTED', 'date': '2024-01-01T12:00:00'},
-    {'id': 2, 'state': 'PENDING', 'date': '2024-01-02T12:00:00'},
-    {'id': 3, 'state': 'EXECUTED', 'date': '2024-01-03T12:00:00'},
-]
-
-executed = filter_by_state(transactions, 'EXECUTED')
+transactions = get_transactions('data/operations.json')
+executed = data_filtering(transactions)
 sorted_executed = sort_by_date(executed)
 print(sorted_executed)
+```
+
+### Конвертация транзакций в рубли
+
+```python
+from src.external_api import convert_transaction_to_rubles
+
+transaction = {'currency': 'USD', 'amount': '100.0'}
+result = convert_transaction_to_rubles(transaction)
+print(result)
 ```
 
 ### Маскирование карты и счета
@@ -103,9 +131,8 @@ print(sorted_executed)
 from src.masks import get_mask_card_number, get_mask_account
 from src.widget import mask_account_card
 
-print(get_mask_card_number('1234567890123456'))  # 1234 56** **** 3456
-print(get_mask_account('73654108430135874305'))      # **1242
-
+print(get_mask_card_number('1234567890123456'))
+print(get_mask_account('73654108430135874305'))
 print(mask_account_card('Счет 73654108430135874305'))
 print(mask_account_card('Visa 1234567890123456'))
 ```
@@ -117,9 +144,6 @@ from src.generators import card_number_generator
 
 for card_number in card_number_generator(1, 3):
     print(card_number)
-# 0000 0000 0000 0001
-# 0000 0000 0000 0002
-# 0000 0000 0000 0003
 ```
 
 ### Обработка ошибок при маскировании
@@ -128,14 +152,14 @@ for card_number in card_number_generator(1, 3):
 from src.masks import get_mask_card_number, get_mask_account
 
 try:
-    print(get_mask_card_number('123456789012345'))  # Недостаточно цифр
+    print(get_mask_card_number('123456789012345'))
 except ValueError as e:
-    print(f"Ошибка: {e}")  # Ошибка: Нестандартное количество цифр
+    print(f"Ошибка: {e}")
 
 try:
-    print(get_mask_account('7365410843013587430'))  # Недостаточно цифр
+    print(get_mask_account('7365410843013587430'))
 except ValueError as e:
-    print(f"Ошибка: {e}")  # Ошибка: Нестандартное количество цифр
+    print(f"Ошибка: {e}")
 ```
 
 ### Декоратор логирования
@@ -148,21 +172,11 @@ def process_data(data):
     return len(data)
 
 print(process_data([1, 2, 3]))
-# process_data ok
-
-@log(filename='app.log')
-def fail_function():
-    raise RuntimeError('Ошибка выполнения')
-
-try:
-    fail_function()
-except RuntimeError:
-    pass
 ```
 
 ### Формирование даты
 
 ```python
 from src.widget import get_date
-print(get_date('2025-12-31T23:59:59'))  # 31.12.2025
+print(get_date('2025-12-31T23:59:59'))
 ```
