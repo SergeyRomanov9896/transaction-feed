@@ -1,7 +1,7 @@
 import json
 
 
-def get_transactions(path: str = "data/operations.json"):
+def get_transactions(path: str = "data/operations.json") -> None | list:
     """Загружает транзакции из JSON-файла.
 
     Аргументы:
@@ -22,7 +22,7 @@ def get_transactions(path: str = "data/operations.json"):
         return []
 
 
-def data_filtering(data):
+def data_filtering(data: list) -> list[dict]:
     """Фильтрует транзакции по статусу EXECUTED и извлекает валюту и сумму.
 
     Аргументы:
