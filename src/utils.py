@@ -1,7 +1,7 @@
 import json
 import logging
 
-logger = logging.getLogger("get_transactions")
+logger = logging.getLogger("transactions")
 file_h = logging.FileHandler("logs/transactions.log", mode="w", encoding="utf-8")
 fmt = logging.Formatter("%(asctime)s | %(filename)s | %(levelname)s | %(message)s")
 
