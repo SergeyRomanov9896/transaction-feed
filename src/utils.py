@@ -1,7 +1,16 @@
 import json
+import logging
+
+logger = logging.getLogger("get_transactions")
+file_h = logging.FileHandler("logs/transactions.log", mode="w", encoding="utf-8")
+fmt = logging.Formatter("%(asctime)s | %(filename)s | %(levelname)s | %(message)s")
+
+file_h.setFormatter(fmt)
+logger.addHandler(file_h)
+logger.setLevel(logging.INFO)
 
 
-def get_transactions(path: str = "data/operations.json") -> None | list:
+def get_transactions(path: str = "data/operations.json") -> list:
     """Загружает транзакции из JSON-файла.
 
     Аргументы:
@@ -13,12 +22,13 @@ def get_transactions(path: str = "data/operations.json") -> None | list:
     try:
         with open(path, encoding="utf-8") as f:
             data_json = json.load(f)
+            logger.info("Транзакции из JSON-файла успешно загружены.")
             return data_json
     except json.JSONDecodeError as e:
-        print(f"Ошибка парсинга JSON: {e}")
+        logger.error("Ошибка парсинга JSON: %s", e)
         return []
     except FileNotFoundError:
-        print("Файл не найден")
+        logger.error("Файл не найден: %s", path)
         return []
 
 
@@ -35,6 +45,7 @@ def data_filtering(data: list) -> list[dict]:
         ValueError: Если нет транзакций со статусом EXECUTED.
     """
     if not any(ex.get("state") == "EXECUTED" for ex in data):
+        logger.warning("В данных отсутствуют транзакции со статусом EXECUTED")
         raise ValueError("Ошибка валидации: в данных отсутствуют транзакции со статусом EXECUTED")
 
     dict_transaction = []
@@ -56,4 +67,5 @@ def data_filtering(data: list) -> list[dict]:
 
         dict_transaction.append({"currency": currency, "amount": amount})
 
+    logger.info("Успешно добавлены словари с ключами currency и amount")
     return dict_transaction

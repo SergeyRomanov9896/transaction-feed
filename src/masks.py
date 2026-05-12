@@ -50,6 +50,3 @@ def get_mask_account(account: str) -> str:
 
     logger.info("Номер счета успешно замаскирован **%s", account[-4:])
     return f"**{account[-4:]}"
-
-
-print(get_mask_account("736541084301358743"))
