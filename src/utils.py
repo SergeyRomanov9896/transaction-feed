@@ -7,7 +7,7 @@ fmt = logging.Formatter("%(asctime)s | %(filename)s | %(levelname)s | %(message)
 
 file_h.setFormatter(fmt)
 logger.addHandler(file_h)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 def get_transactions(path: str = "data/operations.json") -> list:
