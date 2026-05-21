@@ -13,7 +13,8 @@ def log(filename: str | None = None, log_dir: str | None = None) -> Callable[[Ca
 
     Args:
         filename (str | None): Имя файла для записи логов. Если None, вывод ведется в консоль.
-        log_dir (str | None): Каталог для записи файла логов. Если None, используется директория `data` рядом с пакетом.
+        log_dir (str | None): Каталог для записи файла логов. Если None,
+                              используется директория `data` рядом с пакетом.
 
     Raises:
         TypeError: Если filename не None и не является строкой.

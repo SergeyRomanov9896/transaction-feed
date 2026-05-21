@@ -10,7 +10,6 @@ def test_parsing_error(tmp_path, caplog):
     bad_file.write_text("{ invalid json }")
     get_transactions(str(bad_file))
 
-    capture = caplog.records
     assert "Ошибка парсинга JSON: " in caplog.text
 
 
