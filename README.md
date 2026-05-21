@@ -24,10 +24,14 @@
   - `data_filtering` — фильтрует транзакции со статусом `EXECUTED` и возвращает список с `currency` и `amount`.
 - `src/external_api.py`
   - `convert_transaction_to_rubles` — конвертирует валютную транзакцию в рубли, обрабатывая `RUB`, `USD` и `EUR`.
+- `src/transaction_importer.py`
+  - `load_transactions_from_csv` — загружает транзакции из CSV-файла.
+  - `load_transactions_from_excel` — загружает транзакции из Excel-файла.
 
 Проект включает тесты для новых модулей:
 - `tests/test_utils.py`
 - `tests/test_external_api.py`
+- `tests/test_transaction_importer.py`
 - и другие существующие тесты для `src/decorators.py`, `src/masks.py`, `src/processing.py`, `src/generators.py`, `src/widget.py`.
 
 ## 2. Технологии и стек
@@ -41,10 +45,12 @@
   - `src/decorators.py`
   - `src/utils.py`
   - `src/external_api.py`
+-   - `src/transaction_importer.py`
 - Тестирование: pytest
 - Зависимости:
   - `python-dotenv` — для загрузки переменных окружения из `.env`
   - `requests` — для работы `src/external_api.py` с внешним API конвертации валют
+-   - `pandas`, `openpyxl` — для загрузки транзакций из CSV и Excel в `src/transaction_importer.py`
 - Инструменты разработки: linting, type checking и тестирование через Poetry.
 
 ## 3. Инструкция по установке
@@ -74,8 +80,9 @@ poetry shell
 poetry run python main.py
 ```
 
-
 dДля работы модуля `src/external_api.py` необходимо создать файл `.env` в корне проекта со значением:
+
+Для работы модуля `src/external_api.py` необходимо создать файл `.env` в корне проекта со значением:
 
 ```env
 API_KEY=ваш_ключ
@@ -84,7 +91,7 @@ API_KEY=ваш_ключ
 Если `requests` не установлен автоматически, добавьте его командой:
 
 ```bash
-poetry add requests
+poetry add requests pandas openpyxl
 ```
 
 ## 4. Запуск тестов
@@ -113,6 +120,18 @@ transactions = get_transactions('data/operations.json')
 executed = data_filtering(transactions)
 sorted_executed = sort_by_date(executed)
 print(sorted_executed)
+```
+
+### Загрузка транзакций из CSV и Excel
+
+```python
+from src.transaction_importer import load_transactions_from_csv, load_transactions_from_excel
+
+csv_transactions = load_transactions_from_csv('data/transactions.csv')
+excel_transactions = load_transactions_from_excel('data/transactions_excel.xlsx')
+
+print(csv_transactions)
+print(excel_transactions)
 ```
 
 ### Конвертация транзакций в рубли
