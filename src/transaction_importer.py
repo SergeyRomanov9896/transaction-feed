@@ -12,6 +12,17 @@ logger.setLevel(logging.DEBUG)
 
 
 def load_transactions_from_csv(path: str = "data/transactions.csv") -> list[dict]:
+    """Загрузить транзакции из CSV-файла.
+
+    Args:
+        path: Путь к CSV-файлу.
+
+    Returns:
+        Список словарей, где каждый словарь соответствует одной транзакции.
+
+    Raises:
+        FileNotFoundError: Если файл не найден.
+    """
     try:
         df = pd.read_csv(path)
         return df.to_dict(orient="records")
@@ -19,14 +30,22 @@ def load_transactions_from_csv(path: str = "data/transactions.csv") -> list[dict
         logger.error("Файл не найден: %s", path)
         raise
 
+
 def load_transactions_from_excel(path: str = "data/transactions_excel.xlsx") -> list[dict]:
+    """Загрузить транзакции из Excel-файла.
+
+    Args:
+        path: Путь к Excel-файлу.
+
+    Returns:
+        Список словарей, где каждый словарь соответствует одной транзакции.
+
+    Raises:
+        FileNotFoundError: Если файл не найден.
+    """
     try:
         df = pd.read_excel(path)
         return df.to_dict(orient="records")
     except FileNotFoundError:
         logger.error("Файл не найден: %s", path)
         raise
-
-
-if __name__ == "__main__":
-    print(load_transactions_from_excel())
