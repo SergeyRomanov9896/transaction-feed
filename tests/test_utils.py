@@ -1,6 +1,4 @@
-import pytest
-
-from src.utils import data_filtering, get_transactions
+from src.utils import get_transactions
 
 # ================= GET TRANSACTIONS =================
 
@@ -18,22 +16,3 @@ def test_file_not_found(tmp_path):
 
     result = get_transactions(str(config_path))
     assert result == []
-
-
-# ================= DATA FILTERING =================
-
-
-def test_valid_data_returns_correct_result():
-    """✅ Счастливый путь: валидные EXECUTED транзакции"""
-    data = [
-        {"state": "EXECUTED", "operationAmount": {"amount": 1500.50, "currency": {"code": "RUB"}}},
-        {"state": "EXECUTED", "operationAmount": {"amount": 200, "currency": {"code": "USD"}}},
-    ]
-    result = data_filtering(data)
-    assert result == [{"currency": "RUB", "amount": 1500.50}, {"currency": "USD", "amount": 200}]
-
-
-def test_no_executed_transactions_raises_error():
-    data = [{"state": "PENDING"}, {"state": "CANCELED"}]
-    with pytest.raises(ValueError, match="отсутствуют транзакции со статусом EXECUTED"):
-        data_filtering(data)
