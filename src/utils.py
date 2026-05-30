@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from collections import Counter
 
 logger = logging.getLogger("transactions")
 file_h = logging.FileHandler("logs/transactions.log", mode="w", encoding="utf-8")
@@ -68,24 +69,9 @@ def process_bank_search(data: list[dict], search: str) -> list[dict]:
     return [item for item in data if re.search(search, item["description"])]
 
 
-def process_bank_operations(data: list[dict], categories: list[str]) -> dict[str, int]:
-    """Подсчитывает количество операций по категориям.
+def process_bank_operations(data: list[dict], categories: list) -> dict:
+    descriptions = (transaction.get("description") for transaction in data)
 
-    Аргументы:
-        data: Список словарей с информацией о транзакциях.
-        categories: Список категорий для подсчета.
+    counts = Counter(descriptions)
 
-    Возвращает:
-        Словарь, где ключи — это категории, а значения — количество операций в каждой категории.
-    """
-    number_of_operations = {}
-
-    categories_set = set(categories)
-
-    for transaction in data:
-        description = transaction["description"]
-
-        if description in categories_set:
-            number_of_operations[description] = number_of_operations.get(description, 0) + 1
-
-    return number_of_operations
+    return {category: counts[category] for category in categories}
