@@ -69,8 +69,20 @@ def process_bank_search(data: list[dict], search: str) -> list[dict]:
     return [item for item in data if re.search(search, item["description"])]
 
 
-def process_bank_operations(data: list[dict], categories: list) -> dict:
-    descriptions = (transaction.get("description") for transaction in data)
+def process_bank_operations(data: list[dict], categories: list[str]) -> dict:
+    """Считает количество транзакций по описанию для заданных категорий.
+
+    Аргументы:
+        data: Список словарей с информацией о транзакциях.
+        categories: Список строк с названиями категорий.
+
+    Возвращает:
+        dict: Словарь, где ключи — категории, а значения — количество
+        транзакций с соответствующим описанием.
+    """
+    descriptions = (
+        transaction.get("description") for transaction in data if transaction.get("description") is not None
+    )
 
     counts = Counter(descriptions)
 

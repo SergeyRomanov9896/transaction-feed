@@ -143,7 +143,3 @@ def main() -> None:
             print("Такого пункта нет. Попробуйте снова.\n")
         except ValueError:
             print("Введите число от 1 до 3.\n")
-
-
-if __name__ == "__main__":
-    main()
