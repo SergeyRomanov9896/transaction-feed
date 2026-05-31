@@ -16,12 +16,16 @@
 - `src/masks.py`
   - `get_mask_card_number` — маскирует 16-значный номер карты, заменяя средние 6 цифр на `*`.
   - `get_mask_account` — маскирует банковский счет, оставляя видимыми только последние 4 цифры.
+- `main.py`
+  - интерактивный CLI-скрипт для выбора источника транзакций и отображения результатов.
 - `src/widget.py`
   - `mask_account_card` — выбирает нужный метод маскировки по формату строки платежа (`Счет ...` или любой другой номер карты).
   - `get_date` — преобразует дату ISO `YYYY-MM-DDTHH:MM:SS` в формат `DD.MM.YYYY`.
 - `src/utils.py`
   - `get_transactions` — загружает транзакции из JSON-файла и обрабатывает ошибки парсинга/отсутствия файла.
-  - `data_filtering` — фильтрует транзакции со статусом `EXECUTED` и возвращает список с `currency` и `amount`.
+  - `extract_currency_and_amount` — извлекает валюту и сумму из транзакций.
+  - `process_bank_search` — ищет транзакции по описанию с помощью регулярного выражения.
+  - `process_bank_operations` — считает количество транзакций для заданных категорий описаний.
 - `src/external_api.py`
   - `convert_transaction_to_rubles` — конвертирует валютную транзакцию в рубли, обрабатывая `RUB`, `USD` и `EUR`.
 - `src/transaction_importer.py`
@@ -45,12 +49,13 @@
   - `src/decorators.py`
   - `src/utils.py`
   - `src/external_api.py`
--   - `src/transaction_importer.py`
+  - `src/transaction_importer.py`
+- `main.py` — точка входа для интерактивного CLI.
 - Тестирование: pytest
 - Зависимости:
   - `python-dotenv` — для загрузки переменных окружения из `.env`
   - `requests` — для работы `src/external_api.py` с внешним API конвертации валют
--   - `pandas`, `openpyxl` — для загрузки транзакций из CSV и Excel в `src/transaction_importer.py`
+  - `pandas`, `openpyxl` — для загрузки транзакций из CSV и Excel в `src/transaction_importer.py`
 - Инструменты разработки: linting, type checking и тестирование через Poetry.
 
 ## 3. Инструкция по установке
@@ -80,7 +85,7 @@ poetry shell
 poetry run python main.py
 ```
 
-dДля работы модуля `src/external_api.py` необходимо создать файл `.env` в корне проекта со значением:
+Новые функции `src/utils.py` не требуют дополнительных зависимостей, они используют только стандартную библиотеку.
 
 Для работы модуля `src/external_api.py` необходимо создать файл `.env` в корне проекта со значением:
 
@@ -88,10 +93,10 @@ dДля работы модуля `src/external_api.py` необходимо с�
 API_KEY=ваш_ключ
 ```
 
-Если `requests` не установлен автоматически, добавьте его командой:
+Если `requests` или `python-dotenv` не установлены автоматически, добавьте их командой:
 
 ```bash
-poetry add requests pandas openpyxl
+poetry add requests python-dotenv
 ```
 
 ## 4. Запуск тестов
@@ -110,16 +115,15 @@ poetry run pytest --cov=src
 
 ## 5. Примеры использования
 
-### Загрузка и фильтрация транзакций
+### Загрузка и сортировка транзакций
 
 ```python
-from src.utils import get_transactions, data_filtering
+from src.utils import get_transactions
 from src.processing import sort_by_date
 
 transactions = get_transactions('data/operations.json')
-executed = data_filtering(transactions)
-sorted_executed = sort_by_date(executed)
-print(sorted_executed)
+sorted_transactions = sort_by_date(transactions)
+print(sorted_transactions)
 ```
 
 ### Загрузка транзакций из CSV и Excel
@@ -142,6 +146,28 @@ from src.external_api import convert_transaction_to_rubles
 transaction = {'currency': 'USD', 'amount': '100.0'}
 result = convert_transaction_to_rubles(transaction)
 print(result)
+```
+
+### Поиск транзакций по описанию и подсчет категорий
+
+```python
+from src.utils import get_transactions, process_bank_search, process_bank_operations
+
+transactions = get_transactions('data/operations.json')
+
+# Поиск по описанию
+search_results = process_bank_search(transactions, r'(?i)оплата')
+print(f'Найдено: {len(search_results)} транзакций')
+
+# Подсчет транзакций по категориям описаний
+category_counts = process_bank_operations(transactions, ['Еда', 'Транспорт', 'Развлечения'])
+print(category_counts)
+```
+
+### Запуск CLI-приложения
+
+```bash
+python main.py
 ```
 
 ### Маскирование карты и счета
