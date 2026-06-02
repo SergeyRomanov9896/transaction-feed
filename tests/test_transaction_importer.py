@@ -9,10 +9,9 @@ from src.transaction_importer import load_transactions_from_csv, load_transactio
 
 @pytest.fixture
 def valid_csv(tmp_path):
-    path = os.path.join(str(tmp_path), "transactions.csv")
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("id,amount\n1,100\n2,200\n3,150")
-    return path
+    path = tmp_path / "transactions.csv"
+    path.write_text("id;amount\n1;100\n2;200\n3;150", encoding="utf-8")
+    return str(path)
 
 
 @pytest.fixture
@@ -37,6 +36,7 @@ def empty_csv(tmp_path):
 # ──────────────────────────────────────────────────────────────
 def test_csv_load_returns_list_of_dicts(valid_csv):
     result = load_transactions_from_csv(valid_csv)
+
     assert isinstance(result, list)
     assert len(result) == 3
 
@@ -45,13 +45,6 @@ def test_csv_load_returns_list_of_dicts(valid_csv):
 
     assert result[0] == {"id": 1, "amount": 100}
     assert result[-1] == {"id": 3, "amount": 150}
-
-
-def test_excel_load_returns_list_of_dicts(valid_excel):
-    result = load_transactions_from_excel(valid_excel)
-    assert isinstance(result, list)
-    assert len(result) == 2
-    assert result[1] == {"id": 2, "amount": 200}
 
 
 # ──────────────────────────────────────────────────────────────

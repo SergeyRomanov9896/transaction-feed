@@ -22,8 +22,18 @@ def filter_by_currency(data: list[dict], currency: str = "USD") -> Iterator[dict
     if not currency.isalpha():
         raise ValueError("currency должна содержать только буквы")
 
+    target = currency.upper()
+
     for tx in data:
-        if tx.get("operationAmount", {}).get("currency", {}).get("name", "") == currency:
+        # 1️⃣ Путь для JSON
+        code = tx.get("operationAmount", {}).get("currency", {}).get("code", "")
+
+        # 2️⃣ Fallback для CSV/XLSX (если в JSON-пути пусто)
+        if not code:
+            code = tx.get("currency_code", "")
+
+        # Безопасное сравнение с учётом регистра
+        if isinstance(code, str) and code.upper() == target:
             yield tx
 
 
